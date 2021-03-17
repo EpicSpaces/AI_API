@@ -46,7 +46,9 @@ public class Pathfinder : MonoBehaviour
 		else
 		{
 			MoveIt();
-			//	AimShootSightTakeCover();
+			if(path.Count>0 && currpath<path.Count)
+			Aim(path[currpath].Position);
+			//AimShootSightTakeCover();
 		}
 		//	animateIt(velocity);
 		if (Random.Range(0, 2) == 0)
