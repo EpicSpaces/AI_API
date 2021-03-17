@@ -263,14 +263,15 @@ public class Pathfinder : MonoBehaviour
 					ljump = (tr.GetChild(tr.childCount - 1).transform.position - path[currpath - 1].Position).normalized;
 					JumpTime = Time.time + 0.3f;
 					dojump = true;
+					//velocity += l * 5;
+					velocity = ljump * 0;
+					//	rigidbody.velocity = ljump*1;
+					rigidbody.velocity *= 0;
 				}
 			}
 			if (dojump)
 			{
-				//velocity += l * 5;
-				velocity = ljump * 0;
-				//	rigidbody.velocity = ljump*1;
-				rigidbody.velocity *= 0;
+				velocity *= 0;
 				rigidbody.AddForce(ljump * 10000);
 				if (JumpTime < Time.time)
 				{
