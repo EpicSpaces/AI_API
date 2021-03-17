@@ -274,7 +274,7 @@ public class Pathfinder : MonoBehaviour
 				{
 					Transform tr=GameObject.Find("CheckPoints").transform.Find("" + path[currpath - 1].idx).transform;
 					ljump = (tr.GetChild(tr.childCount-1).transform.position - path[currpath - 1].Position).normalized;
-				//	velocity = ljump * 0;
+					velocity = ljump * 0;
 				//	rigidbody.velocity = ljump*1;
 					rigidbody.velocity *= 0;
 					rigidbody.AddForce(ljump * 2300);
