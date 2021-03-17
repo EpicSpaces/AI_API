@@ -14,3 +14,6 @@ Select inverse two waypoints to add connection two way path (sphere drawn in red
 Ladder : Select two waypoints to add ladder (drawn in yellow).
 jump : Select two waypoints to add jump (drawn in green), do not forget to add empty transform as child, name must contains "jumpdir", last sibling index.
 
+![Alt text](ScreenShot_1.gif?raw=true "pic")
+
+
