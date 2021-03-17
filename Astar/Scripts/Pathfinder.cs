@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -13,7 +13,7 @@ public class Pathfinder : MonoBehaviour
 	Vector3 velocity = Vector3.zero;
 	float acceleration = 12;
 	Rigidbody rigidbody;
-	bool ladder=false;
+	bool ladder = false;
 	bool jump = false;
 	bool water = false;
 	private void Start()
@@ -26,7 +26,7 @@ public class Pathfinder : MonoBehaviour
 			map[i].idx = i;
 			for (int j = 0; j < t.GetChild(i).childCount; j++)
 			{
-				if (!t.GetChild(i).GetChild(j).transform.name.Contains("jumpdir"))
+				if (!t.GetChild(i).GetChild(j).transform.name.Contains("ladder")&&!t.GetChild(i).GetChild(j).transform.name.Contains("jumpdir"))
 					map[i].Neighbours.Add(int.Parse(t.GetChild(i).GetChild(j).transform.name));
 			}
 		}
@@ -153,8 +153,8 @@ public class Pathfinder : MonoBehaviour
 
 	}
 	int currpath = 0;
-	float JumpTime =0;
-	bool dojump =false;
+	float JumpTime = 0;
+	bool dojump = false;
 	Vector3 ljump = Vector3.zero;
 	void MoveIt()
 	{
@@ -225,36 +225,23 @@ public class Pathfinder : MonoBehaviour
 		{
 			velocity += (path[currpath].Position - transform.position).normalized * Time.deltaTime * acceleration;
 
-			Debug.DrawLine(path[currpath].Position,transform.position);
-			
-			if (currpath < path.Count-1)
+			Debug.DrawLine(path[currpath].Position, transform.position);
+
+			if (currpath < path.Count - 1)
 			{
-				Transform tr = GameObject.Find("CheckPoints_Ladders").transform;
-				for (int i = 0; i < tr.childCount; i++)
+				Transform tr = GameObject.Find("CheckPoints").transform;
+				Transform tr2 = tr.GetChild(path[currpath].idx).GetChild(tr.GetChild(path[currpath].idx).childCount - 1);
+				if (tr2.name.Equals("ladder") && (path[currpath + 1].idx).ToString().Equals(tr2.GetChild(0).name))
 				{
-					string[] s = tr.GetChild(i).name.Split('_');
-					
-					if ((path[currpath].idx).ToString().Equals(s[0]) && (path[currpath + 1].idx).ToString().Equals(s[1]))
-					{
-						velocity = (path[currpath].Position - transform.position).normalized * Time.deltaTime * acceleration;
-						//velocity *= 0.95f;
-						break;
-					}
+					velocity = (path[currpath].Position - transform.position).normalized * Time.deltaTime * acceleration;
+					//velocity *= 0.95f;	
 				}
-				tr = GameObject.Find("CheckPoints_Jumps").transform;
-				for (int i = 0; i < tr.childCount; i++)
+				if (tr2.name.Equals("jumpdir") && (path[currpath + 1].idx).ToString().Equals(tr2.GetChild(0).name))
 				{
-					string[] s = tr.GetChild(i).name.Split('_');
-
-					if ((path[currpath].idx).ToString().Equals(s[0]) && (path[currpath + 1].idx).ToString().Equals(s[1]))
-					{
-						velocity = (path[currpath].Position - transform.position).normalized * Time.deltaTime * acceleration;
-						//velocity *= 0.95f;
-                  		jump = true;
-						break;
-					}
+					velocity = (path[currpath].Position - transform.position).normalized * Time.deltaTime * acceleration;
+					//velocity *= 0.95f;	
+					jump = true;
 				}
-
 			}
 			if (ladder || water)
 			{
@@ -272,10 +259,10 @@ public class Pathfinder : MonoBehaviour
 				currpath++;
 				if (jump)
 				{
-					Transform tr=GameObject.Find("CheckPoints").transform.Find("" + path[currpath - 1].idx).transform;
-					ljump = (tr.GetChild(tr.childCount-1).transform.position - path[currpath - 1].Position).normalized;
+					Transform tr = GameObject.Find("CheckPoints").transform.Find("" + path[currpath - 1].idx).transform;
+					ljump = (tr.GetChild(tr.childCount - 1).transform.position - path[currpath - 1].Position).normalized;
 					velocity = ljump * 0;
-				//	rigidbody.velocity = ljump*1;
+					//	rigidbody.velocity = ljump*1;
 					rigidbody.velocity *= 0;
 					rigidbody.AddForce(ljump * 2300);
 					JumpTime = Time.time + 0.3f;
@@ -286,7 +273,7 @@ public class Pathfinder : MonoBehaviour
 			{
 				//velocity += l * 5;
 				//velocity = ljump * 0;
-				rigidbody.AddForce(ljump*2300);
+				rigidbody.AddForce(ljump * 2300);
 				if (JumpTime < Time.time)
 				{
 					jump = false;
@@ -546,7 +533,8 @@ public class Pathfinder : MonoBehaviour
 			//	transform.position = other.transform.Find("LadderDown").transform.position + (Vector3.Dot(o, l) / Vector3.Dot(l, l)) * l;
 			/*if ((Vector3.Dot(o, l) / Vector3.Dot(l, l)) < 0)
 				transform.position = new Vector3(transform.position.x,other.transform.Find("LadderDown").transform.position.y,transform.position.z);
-			else*/ if ((Vector3.Dot(o, l) / Vector3.Dot(l, l)) > 1)
+			else*/
+			if ((Vector3.Dot(o, l) / Vector3.Dot(l, l)) > 1)
 				transform.position = new Vector3(transform.position.x, other.transform.Find("LadderTop").transform.position.y, transform.position.z);
 
 			this.GetComponent<Rigidbody>().isKinematic = true;
@@ -557,7 +545,7 @@ public class Pathfinder : MonoBehaviour
 		{
 			//velocity += Vector3.up * 150 * Time.deltaTime;
 			velocity += Vector3.up * 15 * Input.GetAxis("Vertical") * Time.deltaTime;
-			rigidbody.AddForce(Vector3.up*800);
+			rigidbody.AddForce(Vector3.up * 800);
 			water = true;
 		}
 	}
