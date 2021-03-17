@@ -261,7 +261,7 @@ public class Pathfinder : MonoBehaviour
 				{
 					Transform tr = GameObject.Find("CheckPoints").transform.Find("" + path[currpath - 1].idx).transform;
 					ljump = (tr.GetChild(tr.childCount - 1).transform.position - path[currpath - 1].Position).normalized;
-					JumpTime = Time.time + 0.3f;
+					JumpTime = Time.time + 0.2f;
 					dojump = true;
 					//velocity += l * 5;
 					velocity = ljump * 0;
@@ -272,7 +272,7 @@ public class Pathfinder : MonoBehaviour
 			if (dojump)
 			{
 				velocity *= 0;
-				rigidbody.AddForce(ljump * 10000);
+				rigidbody.AddForce(ljump * 2000);
 				if (JumpTime < Time.time)
 				{
 					jump = false;
@@ -296,7 +296,7 @@ public class Pathfinder : MonoBehaviour
 		}
 		if (dojump)
 		{
-			rigidbody.AddForce(new Vector3(0f, 10000, 0));
+			rigidbody.AddForce(new Vector3(0f, 2000, 0));
 			if (JumpTime < Time.time)
 			{
 				dojump = false;
@@ -494,7 +494,7 @@ public class Pathfinder : MonoBehaviour
 			//	Debug.DrawRay(fromPosition, direction * hit.distance, Color.yellow);
 			//Debug.Log("Did Hit");
 			dojump = true;
-			JumpTime = Time.time + 0.3f;
+			JumpTime = Time.time + 0.2f;
 		}
 		else
 		{
