@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -36,7 +36,7 @@ public class CheckPointsDraw : MonoBehaviour
                             t.GetChild(i).GetChild(j).transform.name = k + "";
                             t.GetChild(k).transform.name = k + "";
                         }
-                        if (t.GetChild(i).GetChild(j).transform.name.Contains("jumpdir"))
+                        if (t.GetChild(i).GetChild(j).transform.name.Contains("jumpdir") || t.GetChild(i).GetChild(j).transform.name.Contains("ladder"))
                         {
                             t.GetChild(i).GetChild(j).transform.SetSiblingIndex(t.GetChild(i).childCount);
                         }
@@ -46,15 +46,25 @@ public class CheckPointsDraw : MonoBehaviour
             }
         }
 
-        Gizmos.color = Color.red;
         for (int i = 0; i < t.childCount; i++)
         {
             //Debug.Log(i + "_");
             for (int j = 0; j < t.GetChild(i).childCount; j++)
             {
                 // Debug.Log(i+"_"+j);
-                if (!t.GetChild(i).GetChild(j).transform.name.Contains("jumpdir"))
+                if (t.GetChild(i).GetChild(j).transform.name.Contains("jumpdir"))
                 {
+                    Gizmos.color = Color.green;
+                    Gizmos.DrawSphere(((t.GetChild(i).transform.position + t.GetChild(int.Parse(t.GetChild(i).GetChild(j).GetChild(0).name)).position) / 2 + t.GetChild(i).transform.position) / 2, 0.2f);
+                }
+                else if (t.GetChild(i).GetChild(j).transform.name.Contains("ladder")) 
+                {
+                    Gizmos.color = Color.yellow;
+                    Gizmos.DrawSphere(((t.GetChild(i).transform.position + t.GetChild(int.Parse(t.GetChild(i).GetChild(j).GetChild(0).name)).position) / 2 + t.GetChild(i).transform.position) / 2, 0.2f);
+                }
+                else
+                {
+                    Gizmos.color = Color.red;
                     Transform tchild = t.Find(t.GetChild(i).GetChild(j).transform.name);
                     Gizmos.DrawLine(t.GetChild(i).position, tchild.position);
                     for (int k = 0; k < tchild.childCount; k++)
@@ -66,21 +76,6 @@ public class CheckPointsDraw : MonoBehaviour
                     }
                 }
             }
-        }
-        Gizmos.color = Color.yellow;
-        Transform t2 = GameObject.Find("CheckPoints_Ladders").transform;
-        for (int i = 0; i < t2.childCount; i++)
-        {
-            string[] s = t2.GetChild(i).name.Split('_');
-            Gizmos.DrawSphere(((t.GetChild(int.Parse(s[0])).position + t.GetChild(int.Parse(s[1])).position) / 2 + t.GetChild(int.Parse(s[0])).position) / 2, 0.2f);
-        }
-
-        Gizmos.color = Color.green;
-        Transform t3 = GameObject.Find("CheckPoints_Jumps").transform;
-        for (int i = 0; i < t3.childCount; i++)
-        {
-            string[] s = t3.GetChild(i).name.Split('_');
-            Gizmos.DrawSphere(((t.GetChild(int.Parse(s[0])).position + t.GetChild(int.Parse(s[1])).position) / 2 + t.GetChild(int.Parse(s[0])).position) / 2, 0.2f);
         }
 
         if (Selection.gameObjects.Length == 2 && Selection.gameObjects[0].transform.parent.name.Equals("CheckPoints"))
@@ -109,37 +104,37 @@ public class CheckPointsDraw : MonoBehaviour
             else if (ladder)
             {
                 bool do_ladders = false;
-                Transform tr = GameObject.Find("CheckPoints_Ladders").transform;
-                for (int i = 0; i < tr.childCount; i++)
+                for (int i = 0; i < t.childCount; i++)
                 {
-                    string[] s = tr.GetChild(i).name.Split('_');
-                    if (Selection.gameObjects[one].transform.name.Equals(s[0]) && Selection.gameObjects[two].transform.name.Equals(s[1]))
+                   if (Selection.gameObjects[one].transform.GetChild(Selection.gameObjects[one].transform.childCount-1).name.Equals("ladder"))
                     {
                         do_ladders = true;
                     }
                 }
                 if (!do_ladders)
                 {
-                    GameObject EmptyObj = new GameObject(Selection.gameObjects[one].transform.name + "_" + Selection.gameObjects[two].transform.name);
-                    EmptyObj.transform.parent = GameObject.Find("CheckPoints_Ladders").transform;
+                    GameObject EmptyObj = new GameObject("ladder");
+                    EmptyObj.transform.parent = Selection.gameObjects[one].transform;
+                    GameObject EmptyObj2 = new GameObject(Selection.gameObjects[two].transform.name);
+                    EmptyObj2.transform.parent = EmptyObj.transform;
                 }
             }
             else if (jump)
             {
                 bool do_jumps = false;
-                Transform tr = GameObject.Find("CheckPoints_Jumps").transform;
-                for (int i = 0; i < tr.childCount; i++)
+                for (int i = 0; i < t.childCount; i++)
                 {
-                    string[] s = tr.GetChild(i).name.Split('_');
-                    if (Selection.gameObjects[one].transform.name.Equals(s[0]) && Selection.gameObjects[two].transform.name.Equals(s[1]))
+                    if (Selection.gameObjects[one].transform.GetChild(Selection.gameObjects[one].transform.childCount - 1).name.Equals("jumpdir"))
                     {
                         do_jumps = true;
                     }
                 }
                 if (!do_jumps)
                 {
-                    GameObject EmptyObj = new GameObject(Selection.gameObjects[one].transform.name + "_" + Selection.gameObjects[two].transform.name);
-                    EmptyObj.transform.parent = GameObject.Find("CheckPoints_Jumps").transform;
+                    GameObject EmptyObj = new GameObject("jumpdir");
+                    EmptyObj.transform.parent = Selection.gameObjects[one].transform;
+                    GameObject EmptyObj2 = new GameObject(Selection.gameObjects[two].transform.name);
+                    EmptyObj2.transform.parent = EmptyObj.transform;
                 }
             }
         }
