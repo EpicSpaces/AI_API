@@ -261,19 +261,17 @@ public class Pathfinder : MonoBehaviour
 				{
 					Transform tr = GameObject.Find("CheckPoints").transform.Find("" + path[currpath - 1].idx).transform;
 					ljump = (tr.GetChild(tr.childCount - 1).transform.position - path[currpath - 1].Position).normalized;
-					velocity = ljump * 0;
-					//	rigidbody.velocity = ljump*1;
-					rigidbody.velocity *= 0;
-					rigidbody.AddForce(ljump * 2300);
 					JumpTime = Time.time + 0.3f;
 					dojump = true;
 				}
 			}
-			else if (dojump)
+			if (dojump)
 			{
 				//velocity += l * 5;
-				//velocity = ljump * 0;
-				rigidbody.AddForce(ljump * 2300);
+				velocity = ljump * 0;
+				//	rigidbody.velocity = ljump*1;
+				rigidbody.velocity *= 0;
+				rigidbody.AddForce(ljump * 10000);
 				if (JumpTime < Time.time)
 				{
 					jump = false;
@@ -291,9 +289,17 @@ public class Pathfinder : MonoBehaviour
 			transform.position += transform.right * Input.GetAxis("Horizontal") * xspeed * Time.deltaTime;
 		else
 			transform.position += -transform.right * Input.GetAxis("Horizontal") * xspeed * Time.deltaTime;
-		if (Input.GetKeyDown(KeyCode.Space))
+		if (Input.GetKeyDown(KeyCode.Space) && !dojump)
 		{
-			Jump(Vector3.up);
+			Jump();
+		}
+		if (dojump)
+		{
+			rigidbody.AddForce(new Vector3(0f, 10000, 0));
+			if (JumpTime < Time.time)
+			{
+				dojump = false;
+			}
 		}
 		transform.position += velocity * Time.deltaTime;
 		velocity *= 0.75f;
@@ -473,7 +479,7 @@ public class Pathfinder : MonoBehaviour
 			//Gun_Shoot.Stop();
 		}
 	}
-	void Jump(Vector3 jump)
+	void Jump()
 	{
 		int layerMask = 1 << 9;
 		//	layerMask = ~layerMask;
@@ -486,9 +492,8 @@ public class Pathfinder : MonoBehaviour
 		{
 			//	Debug.DrawRay(fromPosition, direction * hit.distance, Color.yellow);
 			//Debug.Log("Did Hit");
-			//rigidbody.AddForce(new Vector3(0f, 10000, 0));
-			// v=new Vector3(0,0, 0f);
-			velocity = jump * 20;
+			dojump = true;
+			JumpTime = Time.time + 0.3f;
 		}
 		else
 		{
